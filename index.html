@@ -1187,7 +1187,7 @@ function loadMessLS(m,y){
 function saveMessLS(m,y,d){ localStorage.setItem(mKey(m,y),JSON.stringify(d)); flash('mess-save-chip'); }
 
 function getRates(){ const r=localStorage.getItem('mess_rates'); return r?JSON.parse(r):{m1:140,m2:140,half:80}; }
-function saveRates(r){ localStorage.setItem('mess_rates',JSON.stringify(r)); }
+function saveRates(r){ localStorage.setItem('mess_rates',JSON.stringify(r)); debouncedPush(); }
 
 const chipTimers={};
 function flash(id){
@@ -1521,11 +1521,12 @@ function setSyncStatus(state, text) {
 
 // Collect every key from localStorage that belongs to the app
 function collectAllData() {
-  const data = { home: {}, mess: {} };
+  const data = { home: {}, mess: {}, mess_rates: null, theme: null };
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k.startsWith('home_')) data.home[k] = JSON.parse(localStorage.getItem(k));
-    if (k.startsWith('mess_')) data.mess[k] = JSON.parse(localStorage.getItem(k));
+    // Only collect month-keyed data (e.g. home_2026_6, mess_2026_6)
+    if (/^home_\d+_\d+$/.test(k)) data.home[k] = JSON.parse(localStorage.getItem(k));
+    if (/^mess_\d+_\d+$/.test(k)) data.mess[k] = JSON.parse(localStorage.getItem(k));
   }
   data.mess_rates = JSON.parse(localStorage.getItem('mess_rates') || 'null');
   data.theme      = localStorage.getItem('theme');
@@ -1623,7 +1624,15 @@ const _origSaveMessLS = saveMessLS;
 window.saveMessLS = function(m,y,d) { _origSaveMessLS(m,y,d); debouncedPush(); };
 
 let pushTimer;
-function debouncedPush() { clearTimeout(pushTimer); pushTimer = setTimeout(pushToGist, 1500); }
+function debouncedPush() { clearTimeout(pushTimer); pushTimer = setTimeout(pushToGist, 800); }
+
+// Push immediately when user switches away or closes the app — catches the debounce gap
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    clearTimeout(pushTimer);
+    pushToGist();
+  }
+});
 
 /* ── Modal UI ── */
 function openSyncModal() {
