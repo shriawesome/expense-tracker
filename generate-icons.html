@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<script>
+function drawIcon(canvas) {
+  const ctx = canvas.getContext('2d');
+  const s = canvas.width;
+  // Background
+  const grad = ctx.createLinearGradient(0, 0, s, s);
+  grad.addColorStop(0, '#c8e6c9');
+  grad.addColorStop(0.5, '#bbdefb');
+  grad.addColorStop(1, '#f8bbd0');
+  ctx.fillStyle = grad;
+  ctx.roundRect(0, 0, s, s, s * 0.2);
+  ctx.fill();
+  // Leaf emoji
+  ctx.font = `${s * 0.55}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🌿', s / 2, s / 2);
+
+  return canvas.toDataURL('image/png');
+}
+
+const url192 = drawIcon(document.getElementById('c192'));
+const url512 = drawIcon(document.getElementById('c512'));
+
+const a192 = document.createElement('a');
+a192.href = url192; a192.download = 'icon-192.png'; a192.textContent = 'Download icon-192.png';
+document.body.appendChild(a192); document.body.appendChild(document.createElement('br'));
+
+const a512 = document.createElement('a');
+a512.href = url512; a512.download = 'icon-512.png'; a512.textContent = 'Download icon-512.png';
+document.body.appendChild(a512);
+</script>
+</body>
+</html>
