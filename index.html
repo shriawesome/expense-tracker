@@ -960,8 +960,8 @@ tfoot td:not(:first-child) { text-align: right; }
    CALENDAR — Google Calendar style
 ══════════════════════════════════════════ */
 .ctab-calendar {
-  background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border);
-  padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);
+  background: transparent; border-radius: 12px; border: 1px solid var(--border);
+  padding: 14px; margin-bottom: 12px;
 }
 /* Month nav row */
 .cal-month-nav {
@@ -1050,16 +1050,17 @@ tfoot td:not(:first-child) { text-align: right; }
   color: var(--text-3); margin-bottom: 8px; margin-top: 4px;
 }
 
-/* Hide / reopen tab */
-.ctab-banner-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.ctab-hide-btn {
-  background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25);
-  color: rgba(255,255,255,0.85); border-radius: 8px; padding: 7px 12px;
-  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
-  transition: background 0.15s;
+/* × close button on custom tab buttons */
+.tab-close-x {
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-left: 5px; width: 14px; height: 14px; border-radius: 3px;
+  font-size: 0.72rem; opacity: 0.5; line-height: 1;
+  transition: opacity 0.12s, background 0.12s;
+  vertical-align: middle;
 }
-.ctab-hide-btn:hover { background: rgba(255,255,255,0.22); }
-.tab-btn.hidden-tab { opacity: 0.4; font-style: italic; }
+.tab-btn:hover .tab-close-x,
+.tab-btn.active .tab-close-x { opacity: 0.8; }
+.tab-close-x:hover { opacity: 1 !important; background: rgba(255,255,255,0.25); }
 
 /* Jump-to-tab link button on expense row */
 .ctab-link-btn {
@@ -1067,6 +1068,25 @@ tfoot td:not(:first-child) { text-align: right; }
   font-size: 0.8rem; padding: 0 2px; opacity: 0.65; transition: opacity 0.12s; flex-shrink: 0;
 }
 .ctab-link-btn:hover { opacity: 1; }
+
+/* Grouped entries */
+.ctab-date-group { margin-bottom: 10px; }
+.ctab-date-group-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 10px; background: var(--exp-light); border-radius: 7px 7px 0 0;
+  border: 1px solid var(--exp-mid); border-bottom: none;
+}
+.ctab-date-group-label { font-size: 0.75rem; font-weight: 700; color: var(--exp-accent); }
+.ctab-date-group-total { font-size: 0.78rem; font-weight: 700; color: var(--exp-accent); }
+.ctab-date-group-body {
+  background: var(--card-bg); border: 1px solid var(--exp-mid); border-radius: 0 0 7px 7px;
+  overflow: hidden;
+}
+.ctab-date-group-body .ctab-entry {
+  border-radius: 0; box-shadow: none; border: none;
+  border-bottom: 1px solid var(--border); padding: 8px 12px;
+}
+.ctab-date-group-body .ctab-entry:last-child { border-bottom: none; }
 
 </style>
 </head>
@@ -1466,7 +1486,7 @@ function renderHome(d){
         ?`<td class="auto-cell"><span class="auto-val">₹${fmt(ctabActual)}</span><span class="linked-badge">auto</span></td>`
         :`<td>${ci('expenses',i,'actual',r.actual)}</td>`;
       const catCell=linked
-        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('expenses',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="openCtab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
+        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('expenses',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="switchTab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
         :`<td>${ci('expenses',i,'cat',r.cat,'text','left')}</td>`;
       return `<tr>
         ${catCell}
@@ -1744,10 +1764,7 @@ function renderTabs(){
   bar.innerHTML=[
     `<button class="tab-btn${activeTab==='home'?' active':''}" onclick="switchTab('home')">🏠 Home</button>`,
     `<button class="tab-btn${activeTab==='mess'?' active':''}" onclick="switchTab('mess')">🍱 Mess</button>`,
-    // visible custom tabs
-    ...reg.filter(t=>!hidden.includes(t.id)).map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}</button>`),
-    // hidden tabs (dimmed, tap to reopen)
-    ...reg.filter(t=>hidden.includes(t.id)).map(t=>`<button class="tab-btn hidden-tab" onclick="openCtab('${t.id}')" title="Reopen ${t.name}">${t.name}</button>`),
+    ...reg.map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}<span class="tab-close-x" onclick="event.stopPropagation();confirmDeleteCtab('${t.id}','${t.name.replace(/'/g,"\\'")}')">×</span></button>`),
     `<button class="tab-btn add-tab-btn" onclick="promptNewTab()" title="New expense tab">＋</button>`,
   ].join('');
   // ensure panes exist for each custom tab
@@ -1760,6 +1777,11 @@ function renderTabs(){
       tabContent.appendChild(pane);
     }
   });
+}
+
+function confirmDeleteCtab(id,name){
+  if(!confirm(`Close "${name}" tab? All entries will be deleted.`)) return;
+  deleteCtab(id);
 }
 
 function promptNewTab(){
@@ -1926,17 +1948,31 @@ function renderDayPanel(id,m,y,entries,day){
 
 function renderCtabEntries(id,m,y,entries){
   if(!entries.length) return '';
-  return [...entries].sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`
-    <div class="ctab-entry">
-      <div class="ctab-entry-left">
-        <span class="ctab-entry-date">${e.date}</span>
-        <span class="ctab-entry-note">${e.note||'—'}</span>
+  // group by date
+  const groups={};
+  entries.forEach(e=>{(groups[e.date]||(groups[e.date]=[])).push(e);});
+  return Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date=>{
+    const[dy,dmo,dd]=date.split('-').map(Number);
+    const dow=DNAMES[new Date(dy,dmo-1,dd).getDay()];
+    const dayEntries=groups[date];
+    const dayTotal=dayEntries.reduce((s,e)=>s+nv(e.amount),0);
+    return `<div class="ctab-date-group">
+      <div class="ctab-date-group-header">
+        <span class="ctab-date-group-label">${dow}, ${MONTHS[dmo-1]} ${dd}</span>
+        <span class="ctab-date-group-total">₹${fmt(dayTotal)}</span>
       </div>
-      <div class="ctab-entry-right">
-        <span class="ctab-entry-amount">₹${fmt(e.amount)}</span>
-        <button class="del-btn" onclick="ctabDelEntry('${id}','${e.id}',${m},${y})">✕</button>
+      <div class="ctab-date-group-body">
+        ${dayEntries.map(e=>`
+          <div class="ctab-entry">
+            <div class="ctab-entry-left"><span class="ctab-entry-note">${e.note||'—'}</span></div>
+            <div class="ctab-entry-right">
+              <span class="ctab-entry-amount">₹${fmt(e.amount)}</span>
+              <button class="del-btn" onclick="ctabDelEntry('${id}','${e.id}',${m},${y})">✕</button>
+            </div>
+          </div>`).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderCtab(id){
@@ -1967,10 +2003,7 @@ function renderCtab(id){
         <div class="ctab-banner-total">₹${fmt(total)}</div>
         <div class="ctab-banner-sub">Total for ${MONTHS[m]} ${y}</div>
       </div>
-      <div class="ctab-banner-actions">
-        <button class="ctab-hide-btn" onclick="hideCtab('${id}')" title="Hide from tab bar (data kept)">Hide tab</button>
-        <button class="ctab-delete-btn" onclick="deleteCtab('${id}')" title="Permanently delete all data">Delete</button>
-      </div>
+      <button class="ctab-delete-btn" onclick="confirmDeleteCtab('${id}','${tabDef.name.replace(/'/g,"\\'")}')">Close tab ×</button>
     </div>
     <div class="ctab-calendar">${renderCalGrid(id,m,y,entries,selDay)}</div>
     ${selDay
