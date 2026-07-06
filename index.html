@@ -2245,10 +2245,16 @@ async function pushToGist() {
         localStorage.setItem(LS_GIST_ID, created.id);
       }
     }
+    lastPushTime=Date.now();
     setSyncStatus('ok', 'Synced');
   } catch(e) {
-    setSyncStatus('err', 'Sync failed');
     console.error('Push error:', e);
+    if(e.message&&e.message.includes('rate limit')){
+      rateLimitUntil=Date.now()+60000; // back off 60s
+      setSyncStatus('err', 'Rate limited — will retry in 60s');
+    } else {
+      setSyncStatus('err', 'Sync failed');
+    }
   }
 }
 
@@ -2283,12 +2289,25 @@ window.saveHomeLS = function(m,y,d) { _origSaveHomeLS(m,y,d); debouncedPush(); }
 const _origSaveMessLS = saveMessLS;
 window.saveMessLS = function(m,y,d) { _origSaveMessLS(m,y,d); debouncedPush(); };
 
-let pushTimer;
-function debouncedPush() { clearTimeout(pushTimer); pushTimer = setTimeout(pushToGist, 800); }
+let pushTimer, lastPushTime=0, rateLimitUntil=0;
+function debouncedPush(){
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(()=>{
+    const now=Date.now();
+    if(now<rateLimitUntil) return; // still in rate-limit backoff
+    const gap=now-lastPushTime;
+    if(gap<30000){ // push at most once per 30s
+      clearTimeout(pushTimer);
+      pushTimer=setTimeout(pushToGist, 30000-gap);
+    } else {
+      pushToGist();
+    }
+  }, 10000); // wait 10s after last edit
+}
 
 // Push immediately when user switches away or closes the app — catches the debounce gap
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
+  if (document.visibilityState === 'hidden' && Date.now() >= rateLimitUntil) {
     clearTimeout(pushTimer);
     pushToGist();
   }
