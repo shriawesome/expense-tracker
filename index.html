@@ -250,9 +250,11 @@ body {
 }
 
 /* Tabs */
-.tabs { display: flex; gap: 2px; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
 .tab-btn {
-  flex: 1;
+  flex: 1 0 auto;
+  min-width: 70px;
   padding: 9px 12px;
   border: none;
   border-radius: 8px 8px 0 0;
@@ -878,6 +880,82 @@ tfoot td:not(:first-child) { text-align: right; }
   user-select: none;
 }
 
+/* ══════════════════════════════════════════
+   ADD-TAB BUTTON
+══════════════════════════════════════════ */
+.add-tab-btn {
+  flex: 0 0 36px !important;
+  min-width: 36px !important;
+  font-size: 1.15rem;
+  font-weight: 400;
+  padding: 9px 6px;
+}
+
+/* ══════════════════════════════════════════
+   LINKED AUTO CELLS (Bills "Mess", ctab rows)
+══════════════════════════════════════════ */
+.auto-cell { text-align: right; white-space: nowrap; }
+.auto-val  { font-size: 0.875rem; color: var(--text); }
+.linked-badge {
+  display: inline-block;
+  font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+  background: var(--inc-badge); color: var(--inc-accent);
+  border-radius: 4px; padding: 1px 5px; margin-left: 5px; vertical-align: middle;
+}
+
+/* ══════════════════════════════════════════
+   CUSTOM EXPENSE TABS
+══════════════════════════════════════════ */
+.ctab-banner {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--exp-accent); color: #fff;
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;
+  box-shadow: var(--shadow-md);
+}
+.ctab-banner-name { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+.ctab-banner-total { font-family: 'Nunito', sans-serif; font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.ctab-banner-sub   { font-size: 0.73rem; opacity: 0.7; margin-top: 3px; }
+.ctab-delete-btn {
+  background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.9); border-radius: 8px; padding: 7px 13px;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+  transition: background 0.15s;
+}
+.ctab-delete-btn:hover { background: rgba(255,255,255,0.28); }
+
+.ctab-add-form {
+  background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border);
+  padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm);
+}
+.ctab-form-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); margin-bottom: 10px; }
+.ctab-form-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.ctab-form-group { display: flex; flex-direction: column; gap: 4px; }
+.ctab-form-group label { font-size: 0.72rem; font-weight: 600; color: var(--text-3); }
+.ctab-form-note { flex: 1; min-width: 140px; }
+.ctab-form-input {
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px;
+  font-family: 'Inter', sans-serif; font-size: 0.875rem;
+  background: var(--page-bg); color: var(--text);
+}
+.ctab-form-input:focus { outline: none; border-color: var(--exp-accent); background: var(--card-bg); }
+.ctab-add-btn { white-space: nowrap; align-self: flex-end; }
+
+.ctab-entries-wrap { display: flex; flex-direction: column; gap: 8px; }
+.ctab-entry {
+  background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);
+  padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+.ctab-entry-left  { display: flex; flex-direction: column; gap: 2px; }
+.ctab-entry-date  { font-size: 0.75rem; font-weight: 700; color: var(--text-2); }
+.ctab-entry-note  { font-size: 0.8rem; color: var(--text-3); }
+.ctab-entry-right { display: flex; align-items: center; gap: 12px; }
+.ctab-entry-amount { font-weight: 700; font-size: 0.95rem; color: var(--exp-accent); }
+.ctab-empty {
+  text-align: center; padding: 32px 16px; color: var(--text-3); font-size: 0.88rem;
+  background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border);
+}
+
 </style>
 </head>
 <body>
@@ -897,10 +975,7 @@ tfoot td:not(:first-child) { text-align: right; }
         <span id="theme-label">Dark</span>
       </button>
     </div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('home')">🏠 Home</button>
-      <button class="tab-btn" onclick="switchTab('mess')">🍱 Mess</button>
-    </div>
+    <div class="tabs" id="tabs-bar"></div>
   </div>
 </header>
 
@@ -1200,11 +1275,17 @@ function flash(id){
 /* ══════════════════════════════════════════
    TABS
 ══════════════════════════════════════════ */
+let activeTab = 'home';
+
 function switchTab(tab){
+  activeTab = tab;
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.add('active');
-  document.querySelectorAll('.tab-btn')[tab==='home'?0:1].classList.add('active');
+  const pane = document.getElementById(`tab-${tab}`);
+  if(pane) pane.classList.add('active');
+  renderTabs();
+  if(tab==='home') loadHomeData();
+  else if(tab==='mess') loadMessData();
+  else renderCtab(tab);
 }
 
 /* ══════════════════════════════════════════
@@ -1243,24 +1324,39 @@ function ci(sec,i,field,val,type,cls,extra=''){
 }
 
 function renderHome(d){
+  const{m,y}=getHomeSel();
+  const messTotal=getMessTotalForMonth(m,y);
+  const reg=getRegistry();
   const R={
     income: d.income.map((r,i)=>`<tr>
       <td>${ci('income',i,'cat',r.cat,'text','left')}</td>
       <td>${ci('income',i,'budget',r.budget)}</td>
       <td>${ci('income',i,'actual',r.actual)}</td>
       <td><button class="del-btn" onclick="delRow('income',${i})">✕</button></td></tr>`),
-    bills: d.bills.map((r,i)=>`<tr>
-      <td>${ci('bills',i,'cat',r.cat,'text','left')}</td>
-      <td>${ci('bills',i,'due',r.due,'text','narrow','placeholder="dd"')}</td>
-      <td>${ci('bills',i,'budget',r.budget)}</td>
-      <td>${ci('bills',i,'actual',r.actual)}</td>
-      <td><button class="del-btn" onclick="delRow('bills',${i})">✕</button></td></tr>`),
+    bills: d.bills.map((r,i)=>{
+      const isMess=r.cat.toLowerCase()==='mess';
+      const actualCell=isMess
+        ?`<td class="auto-cell"><span class="auto-val">₹${fmt(messTotal)}</span><span class="linked-badge">auto</span></td>`
+        :`<td>${ci('bills',i,'actual',r.actual)}</td>`;
+      return `<tr>
+        <td>${ci('bills',i,'cat',r.cat,'text','left')}</td>
+        <td>${ci('bills',i,'due',r.due,'text','narrow','placeholder="dd"')}</td>
+        <td>${ci('bills',i,'budget',r.budget)}</td>
+        ${actualCell}
+        <td><button class="del-btn" onclick="delRow('bills',${i})">✕</button></td></tr>`;
+    }),
     expenses: d.expenses.map((r,i)=>{
-      const left=nv(r.budget)-nv(r.actual);
+      const linked=reg.find(t=>t.name.toLowerCase()===r.cat.toLowerCase());
+      const ctabActual=linked?getCtabTotal(linked.id,m,y):null;
+      const displayActual=ctabActual!==null?ctabActual:nv(r.actual);
+      const left=nv(r.budget)-displayActual;
+      const actualCell=linked
+        ?`<td class="auto-cell"><span class="auto-val">₹${fmt(ctabActual)}</span><span class="linked-badge">auto</span></td>`
+        :`<td>${ci('expenses',i,'actual',r.actual)}</td>`;
       return `<tr>
         <td>${ci('expenses',i,'cat',r.cat,'text','left')}</td>
         <td>${ci('expenses',i,'budget',r.budget)}</td>
-        <td>${ci('expenses',i,'actual',r.actual)}</td>
+        ${actualCell}
         <td class="${left<0?'negative':left>0?'positive':''}">${fmt(left)}</td>
         <td><button class="del-btn" onclick="delRow('expenses',${i})">✕</button></td></tr>`;
     }),
@@ -1281,9 +1377,17 @@ function renderHome(d){
 }
 
 function updateTotals(d){
+  const{m,y}=getHomeSel();
+  const messTotal=getMessTotalForMonth(m,y);
+  const reg=getRegistry();
   const iB=sumF(d.income,'budget'),iA=sumF(d.income,'actual');
-  const bB=sumF(d.bills,'budget'),bA=sumF(d.bills,'actual');
-  const eB=sumF(d.expenses,'budget'),eA=sumF(d.expenses,'actual');
+  const bB=sumF(d.bills,'budget');
+  const bA=d.bills.reduce((s,r)=>s+(r.cat.toLowerCase()==='mess'?messTotal:nv(r.actual)),0);
+  const eB=sumF(d.expenses,'budget');
+  const eA=d.expenses.reduce((s,r)=>{
+    const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase());
+    return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
+  },0);
   const sB=sumF(d.savings,'budget'),sA=sumF(d.savings,'actual');
   const dB=sumF(d.debt,'budget'),dA=sumF(d.debt,'actual');
   const balance=iA-bA-eA-sA-dA;
@@ -1329,6 +1433,14 @@ function loadHomeData(){
   const{m,y}=getHomeSel();
   homeData=loadHome(m,y);
   renderHome(homeData);
+}
+
+function getMessTotalForMonth(m,y){
+  const stored=localStorage.getItem(mKey(m,y));
+  if(!stored) return 0;
+  const data=JSON.parse(stored);
+  const rates=getRates();
+  return data.reduce((s,r)=>s+mealCost(r.m1,rates.m1,rates.half)+mealCost(r.m2,rates.m2,rates.half)+nv(r.extra),0);
 }
 
 /* ══════════════════════════════════════════
@@ -1482,6 +1594,176 @@ function updateMessCalc(){
 }
 
 /* ══════════════════════════════════════════
+   CUSTOM EXPENSE TABS
+══════════════════════════════════════════ */
+const CTAB_REG_KEY = 'ctab_registry';
+const ctabKey = (id,m,y) => `ctab_${id}_${y}_${m}`;
+
+function getRegistry(){ return JSON.parse(localStorage.getItem(CTAB_REG_KEY)||'[]'); }
+function saveRegistry(reg){ localStorage.setItem(CTAB_REG_KEY,JSON.stringify(reg)); debouncedPush(); }
+
+function getCtabEntries(id,m,y){ return JSON.parse(localStorage.getItem(ctabKey(id,m,y))||'[]'); }
+function saveCtabEntries(id,m,y,entries){ localStorage.setItem(ctabKey(id,m,y),JSON.stringify(entries)); debouncedPush(); }
+
+function getCtabTotal(id,m,y){ return getCtabEntries(id,m,y).reduce((s,e)=>s+nv(e.amount),0); }
+
+function renderTabs(){
+  const reg=getRegistry();
+  const bar=document.getElementById('tabs-bar');
+  if(!bar) return;
+  bar.innerHTML=[
+    `<button class="tab-btn${activeTab==='home'?' active':''}" onclick="switchTab('home')">🏠 Home</button>`,
+    `<button class="tab-btn${activeTab==='mess'?' active':''}" onclick="switchTab('mess')">🍱 Mess</button>`,
+    ...reg.map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}</button>`),
+    `<button class="tab-btn add-tab-btn" onclick="promptNewTab()" title="New expense tab">＋</button>`,
+  ].join('');
+  // ensure panes exist for each custom tab
+  const tabContent=document.querySelector('.tab-content');
+  reg.forEach(t=>{
+    if(!document.getElementById(`tab-${t.id}`)){
+      const pane=document.createElement('div');
+      pane.id=`tab-${t.id}`;
+      pane.className='tab-pane';
+      tabContent.appendChild(pane);
+    }
+  });
+}
+
+function promptNewTab(){
+  const name=(prompt('New tab name (e.g. Gym, Trips):')||'').trim();
+  if(!name) return;
+  const reg=getRegistry();
+  if(reg.some(t=>t.name.toLowerCase()===name.toLowerCase())){
+    alert(`A tab named "${name}" already exists.`); return;
+  }
+  const id=Math.random().toString(36).slice(2,8);
+  reg.push({id,name});
+  saveRegistry(reg);
+  renderTabs();
+  switchTab(id);
+}
+
+function deleteCtab(id){
+  if(!confirm('Delete this tab? All entries will be removed.')) return;
+  let reg=getRegistry();
+  reg=reg.filter(t=>t.id!==id);
+  saveRegistry(reg);
+  const toRemove=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith(`ctab_${id}_`)) toRemove.push(k);
+  }
+  toRemove.forEach(k=>localStorage.removeItem(k));
+  localStorage.removeItem(`ctab_sel_${id}`);
+  const pane=document.getElementById(`tab-${id}`);
+  if(pane) pane.remove();
+  switchTab('home');
+}
+
+function ctabChangeSel(id){
+  const m=+(document.getElementById(`ctab-month-${id}`)?.value||0);
+  const y=+(document.getElementById(`ctab-year-${id}`)?.value||new Date().getFullYear());
+  localStorage.setItem(`ctab_sel_${id}`,JSON.stringify({m,y}));
+  renderCtab(id);
+}
+
+function ctabAddEntry(id){
+  const dateEl=document.getElementById(`ctab-date-${id}`);
+  const amountEl=document.getElementById(`ctab-amount-${id}`);
+  const noteEl=document.getElementById(`ctab-note-${id}`);
+  const date=dateEl?.value;
+  const amount=nv(amountEl?.value);
+  const note=(noteEl?.value||'').trim();
+  if(!date||!amount) return;
+  const[y,mo]=date.split('-').map(Number);
+  const m=mo-1;
+  const entries=getCtabEntries(id,m,y);
+  entries.push({id:Math.random().toString(36).slice(2,10),date,amount,note});
+  saveCtabEntries(id,m,y,entries);
+  if(amountEl) amountEl.value='';
+  if(noteEl) noteEl.value='';
+  renderCtab(id);
+  // refresh home totals if same month is open
+  const{m:hm,y:hy}=getHomeSel();
+  if(m===hm&&y===hy){homeData=loadHome(hm,hy);renderHome(homeData);}
+}
+
+function ctabDelEntry(tabId,entryId,m,y){
+  let entries=getCtabEntries(tabId,m,y);
+  entries=entries.filter(e=>e.id!==entryId);
+  saveCtabEntries(tabId,m,y,entries);
+  renderCtab(tabId);
+  const{m:hm,y:hy}=getHomeSel();
+  if(m===hm&&y===hy){homeData=loadHome(hm,hy);renderHome(homeData);}
+}
+
+function renderCtabEntries(id,m,y,entries){
+  if(!entries.length) return `<div class="ctab-empty">No entries for ${MONTHS[m]} ${y}. Add one above!</div>`;
+  return [...entries].sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`
+    <div class="ctab-entry">
+      <div class="ctab-entry-left">
+        <span class="ctab-entry-date">${e.date}</span>
+        <span class="ctab-entry-note">${e.note||'—'}</span>
+      </div>
+      <div class="ctab-entry-right">
+        <span class="ctab-entry-amount">₹${fmt(e.amount)}</span>
+        <button class="del-btn" onclick="ctabDelEntry('${id}','${e.id}',${m},${y})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderCtab(id){
+  const reg=getRegistry();
+  const tabDef=reg.find(t=>t.id===id);
+  if(!tabDef) return;
+  const now=new Date();
+  const stored=JSON.parse(localStorage.getItem(`ctab_sel_${id}`)||'null')||{m:now.getMonth(),y:now.getFullYear()};
+  const{m,y}=stored;
+  const entries=getCtabEntries(id,m,y);
+  const total=entries.reduce((s,e)=>s+nv(e.amount),0);
+  const todayStr=`${y}-${String(m+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const pane=document.getElementById(`tab-${id}`);
+  if(!pane) return;
+  pane.innerHTML=`<div class="page-inner">
+    <div class="month-bar">
+      <label>Month</label>
+      <select id="ctab-month-${id}" onchange="ctabChangeSel('${id}')">
+        ${MONTHS.map((mn,i)=>`<option value="${i}"${i===m?' selected':''}>${mn}</option>`).join('')}
+      </select>
+      <label>Year</label>
+      <input type="number" id="ctab-year-${id}" value="${y}" min="2020" max="2035" style="width:74px" onchange="ctabChangeSel('${id}')" />
+    </div>
+    <div class="ctab-banner">
+      <div>
+        <div class="ctab-banner-name">${tabDef.name}</div>
+        <div class="ctab-banner-total">₹${fmt(total)}</div>
+        <div class="ctab-banner-sub">Total for ${MONTHS[m]} ${y}</div>
+      </div>
+      <button class="ctab-delete-btn" onclick="deleteCtab('${id}')">Delete tab</button>
+    </div>
+    <div class="ctab-add-form">
+      <div class="ctab-form-title">Add Entry</div>
+      <div class="ctab-form-row">
+        <div class="ctab-form-group">
+          <label>Date</label>
+          <input type="date" id="ctab-date-${id}" value="${todayStr}" class="ctab-form-input" />
+        </div>
+        <div class="ctab-form-group">
+          <label>Amount ₹</label>
+          <input type="number" id="ctab-amount-${id}" min="0" placeholder="0" class="ctab-form-input" style="width:110px" />
+        </div>
+        <div class="ctab-form-group ctab-form-note">
+          <label>Note</label>
+          <input type="text" id="ctab-note-${id}" placeholder="e.g. Monthly membership" class="ctab-form-input" />
+        </div>
+        <button class="btn-primary ctab-add-btn" onclick="ctabAddEntry('${id}')">Add</button>
+      </div>
+    </div>
+    <div class="ctab-entries-wrap">${renderCtabEntries(id,m,y,entries)}</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
    DARK MODE
 ══════════════════════════════════════════ */
 function applyTheme(dark) {
@@ -1521,15 +1803,16 @@ function setSyncStatus(state, text) {
 
 // Collect every key from localStorage that belongs to the app
 function collectAllData() {
-  const data = { home: {}, mess: {}, mess_rates: null, theme: null };
+  const data = { home: {}, mess: {}, mess_rates: null, theme: null, ctab_registry: null, ctab: {} };
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    // Only collect month-keyed data (e.g. home_2026_6, mess_2026_6)
     if (/^home_\d+_\d+$/.test(k)) data.home[k] = JSON.parse(localStorage.getItem(k));
     if (/^mess_\d+_\d+$/.test(k)) data.mess[k] = JSON.parse(localStorage.getItem(k));
+    if (/^ctab_[a-z0-9]+_\d+_\d+$/.test(k)) data.ctab[k] = JSON.parse(localStorage.getItem(k));
   }
-  data.mess_rates = JSON.parse(localStorage.getItem('mess_rates') || 'null');
-  data.theme      = localStorage.getItem('theme');
+  data.mess_rates    = JSON.parse(localStorage.getItem('mess_rates') || 'null');
+  data.ctab_registry = JSON.parse(localStorage.getItem(CTAB_REG_KEY) || 'null');
+  data.theme         = localStorage.getItem('theme');
   return data;
 }
 
@@ -1538,7 +1821,9 @@ function applyRemoteData(data) {
   if (!data) return;
   Object.entries(data.home || {}).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v)));
   Object.entries(data.mess || {}).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v)));
-  if (data.mess_rates) localStorage.setItem('mess_rates', JSON.stringify(data.mess_rates));
+  Object.entries(data.ctab || {}).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v)));
+  if (data.mess_rates)    localStorage.setItem('mess_rates', JSON.stringify(data.mess_rates));
+  if (data.ctab_registry) localStorage.setItem(CTAB_REG_KEY, JSON.stringify(data.ctab_registry));
   // Don't overwrite theme — that's device-local preference
 }
 
@@ -1607,8 +1892,8 @@ async function syncOnLoad() {
   try {
     const remote = await pullFromGist(pat, gistId);
     applyRemoteData(remote);
+    renderTabs();
     setSyncStatus('ok', 'Synced');
-    // Re-render with fresh data
     loadHomeData();
     loadMessData();
   } catch(e) {
@@ -1697,6 +1982,7 @@ async function connectSync() {
       statusEl.textContent = 'Found existing data — pulling…';
       const remote = await pullFromGist(pat, gistId);
       applyRemoteData(remote);
+      renderTabs();
       loadHomeData(); loadMessData();
     } else {
       statusEl.textContent = 'Creating new private gist…';
@@ -1728,6 +2014,7 @@ async function forcePull() {
   try {
     const remote = await pullFromGist(pat, gistId);
     applyRemoteData(remote);
+    renderTabs();
     loadHomeData(); loadMessData();
     statusEl.className = 'modal-status ok'; statusEl.textContent = '✓ Pulled latest data.';
     setSyncStatus('ok', 'Synced');
@@ -1756,6 +2043,7 @@ function disconnectSync() {
   const saved = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   applyTheme(saved ? saved === 'dark' : prefersDark);
+  renderTabs();
   loadHomeData();
   loadMessData();
   syncOnLoad();
