@@ -1,37 +1,21 @@
-const CACHE = 'expense-tracker-v13';
-const ASSETS = [
-  './manifest.json',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-  'https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap',
-];
+/* Kill-switch service worker.
+   The app no longer uses a service worker. If an old one is still
+   installed on a device, the browser will eventually fetch this file,
+   replace the old worker with this one, and this one immediately
+   unregisters itself and deletes every cache — freeing the page to
+   always load fresh from the network. */
+self.addEventListener('install', () => self.skipWaiting());
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+    await self.clients.claim();
+    await self.registration.unregister();
+    const clients = await self.clients.matchAll({ type: 'window' });
+    clients.forEach(c => c.navigate(c.url));
+  })());
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', e => {
-  // Always fetch HTML from network so deploys show immediately.
-  // Fall back to cache only when offline.
-  if (e.request.destination === 'document' || e.request.url.endsWith('/expense-tracker/') || e.request.url.endsWith('index.html')) {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match(e.request))
-    );
-    return;
-  }
-  // Everything else: cache-first (fast, works offline)
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-      const clone = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, clone));
-      return res;
-    }).catch(() => cached))
-  );
-});
+// Pass every request straight through to the network — no caching.
+self.addEventListener('fetch', () => {});

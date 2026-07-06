@@ -1363,9 +1363,17 @@ tfoot td:not(:first-child) { text-align: right; }
 <script>
 'use strict';
 
-/* ── Service Worker ── */
+/* ── No Service Worker: always load fresh from the network ──
+   We intentionally do NOT register a service worker. Instead we tear
+   down any previously-installed one and wipe its caches, so nobody
+   ever gets stuck on a stale cached build again. */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations()
+    .then(regs => regs.forEach(r => r.unregister()))
+    .catch(() => {});
+}
+if (window.caches && caches.keys) {
+  caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {});
 }
 
 /* ══════════════════════════════════════════
