@@ -2337,6 +2337,9 @@ document.addEventListener('visibilitychange', () => {
     clearTimeout(pushTimer);
     pushToGist();
   }
+  if (document.visibilityState === 'visible') {
+    syncOnLoad(); // pull latest when tab comes back into focus
+  }
 });
 
 /* ── Modal UI ── */
