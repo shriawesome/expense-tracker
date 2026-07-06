@@ -2274,6 +2274,7 @@ async function pushToGist() {
       }
     }
     lastPushTime=Date.now();
+    dirty=false;
     setSyncStatus('ok', 'Synced');
   } catch(e) {
     console.error('Push error:', e);
@@ -2323,14 +2324,16 @@ window.saveHomeLS = function(m,y,d) { _origSaveHomeLS(m,y,d); debouncedPush(); }
 const _origSaveMessLS = saveMessLS;
 window.saveMessLS = function(m,y,d) { _origSaveMessLS(m,y,d); debouncedPush(); };
 
-let pushTimer, lastPushTime=0, rateLimitUntil=0;
+let pushTimer, lastPushTime=0, rateLimitUntil=0, dirty=false;
 function pushNow(){
+  dirty=true;
   clearTimeout(pushTimer);
   const wait=Math.max(0, rateLimitUntil-Date.now());
   if(wait>0) pushTimer=setTimeout(pushToGist, wait);
   else pushToGist();
 }
 function debouncedPush(){
+  dirty=true;
   clearTimeout(pushTimer);
   pushTimer=setTimeout(()=>{
     const now=Date.now();
@@ -2345,20 +2348,28 @@ function debouncedPush(){
   }, 10000); // wait 10s after last edit
 }
 
-// Push immediately when user switches away or closes the app — catches the debounce gap
+// Only push on switch-away if there are actual unsaved local edits (dirty).
+// This prevents a passive device showing stale data from clobbering the cloud.
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden' && Date.now() >= rateLimitUntil) {
+  if (document.visibilityState === 'hidden' && dirty && Date.now() >= rateLimitUntil) {
     clearTimeout(pushTimer);
     pushToGist();
   }
-  if (document.visibilityState === 'visible') {
-    syncOnLoad();
+  if (document.visibilityState === 'visible' && !dirty) {
+    syncOnLoad(); // pull latest whenever we come back (unless we have unsaved edits)
   }
 });
 // pagehide fires more reliably on mobile PWA when switching away
 window.addEventListener('pagehide', () => {
-  if (Date.now() >= rateLimitUntil) { clearTimeout(pushTimer); pushToGist(); }
+  if (dirty && Date.now() >= rateLimitUntil) { clearTimeout(pushTimer); pushToGist(); }
 });
+// window focus catches switching between apps/windows on desktop where
+// visibilitychange may not fire; pull latest (only applies if remote is newer)
+window.addEventListener('focus', () => { if (!dirty) syncOnLoad(); });
+// Poll every 45s so an idle open window still catches changes from other devices
+setInterval(() => {
+  if (document.visibilityState === 'visible' && !dirty) syncOnLoad();
+}, 45000);
 
 /* ── Modal UI ── */
 function openSyncModal() {

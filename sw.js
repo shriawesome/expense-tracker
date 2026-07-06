@@ -1,4 +1,4 @@
-const CACHE = 'expense-tracker-v12';
+const CACHE = 'expense-tracker-v13';
 const ASSETS = [
   './manifest.json',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
