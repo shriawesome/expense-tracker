@@ -1494,7 +1494,7 @@ function renderHome(d){
         ?`<td class="auto-cell"><span class="auto-val">₹${fmt(ctabActual)}</span><span class="linked-badge">auto</span></td>`
         :`<td>${ci('expenses',i,'actual',r.actual)}</td>`;
       const catCell=linked
-        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('expenses',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="switchTab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
+        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('expenses',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="openCtab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
         :`<td>${ci('expenses',i,'cat',r.cat,'text','left')}</td>`;
       return `<tr>
         ${catCell}
@@ -1773,7 +1773,6 @@ function renderTabs(){
     `<button class="tab-btn${activeTab==='home'?' active':''}" onclick="switchTab('home')">🏠 Home</button>`,
     `<button class="tab-btn${activeTab==='mess'?' active':''}" onclick="switchTab('mess')">🍱 Mess</button>`,
     ...reg.filter(t=>!hidden.includes(t.id)).map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}<span class="tab-close-x" onclick="event.stopPropagation();hideCtab('${t.id}')">×</span></button>`),
-    ...reg.filter(t=>hidden.includes(t.id)).map(t=>`<button class="tab-btn hidden-tab" onclick="openCtab('${t.id}')" title="Reopen ${t.name}">${t.name}</button>`),
     `<button class="tab-btn add-tab-btn" onclick="promptNewTab()" title="New expense tab">＋</button>`,
   ].join('');
   // ensure panes exist for each custom tab
