@@ -13,7 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
 <style>
 
 /* ══════════════════════════════════════════
@@ -124,7 +124,7 @@
 input, select, textarea { color: var(--text); }
 html, body { height: 100%; overflow: hidden; }
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Comic Neue', cursive;
   background: var(--page-bg);
   color: var(--text);
   display: flex;
@@ -155,7 +155,7 @@ body {
   padding-bottom: 10px;
 }
 .header-top h1 {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 1.15rem;
   font-weight: 900;
   color: #fff;
@@ -176,7 +176,7 @@ body {
   border: 1.5px solid rgba(255,255,255,0.25);
   border-radius: 8px; padding: 5px 10px;
   color: rgba(255,255,255,0.9); font-size: 0.75rem; font-weight: 600;
-  font-family: 'Inter', sans-serif; cursor: pointer;
+  font-family: 'Comic Neue', cursive; cursor: pointer;
   transition: background 0.15s; white-space: nowrap;
 }
 .sync-btn:hover { background: rgba(255,255,255,0.25); }
@@ -206,32 +206,33 @@ body {
   transform: translateY(10px); transition: transform 0.2s;
 }
 .modal-overlay.open .modal { transform: translateY(0); }
-.modal h2 { font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+.modal h2 { font-family: 'Comic Neue', cursive; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
 .modal .desc { font-size: 0.82rem; color: var(--text-3); margin-bottom: 18px; line-height: 1.5; }
 .modal label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); margin-bottom: 5px; }
-.modal input[type=text], .modal input[type=password] {
+.modal input[type=text], .modal input[type=password], .modal input[type=number], .modal select {
   width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 8px 11px; font-family: 'Inter', sans-serif; font-size: 0.88rem;
+  padding: 8px 11px; font-family: 'Comic Neue', cursive; font-size: 0.88rem;
   background: var(--page-bg); color: var(--text); margin-bottom: 12px;
+  box-sizing: border-box;
 }
-.modal input:focus { outline: none; border-color: var(--inc-accent); }
+.modal input:focus, .modal select:focus { outline: none; border-color: var(--inc-accent); }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .btn-primary {
   background: var(--inc-accent); color: #fff; border: none; border-radius: 8px;
-  padding: 8px 18px; font-family: 'Inter', sans-serif; font-size: 0.85rem;
+  padding: 8px 18px; font-family: 'Comic Neue', cursive; font-size: 0.85rem;
   font-weight: 600; cursor: pointer; transition: opacity 0.15s;
 }
 .btn-primary:hover { opacity: 0.88; }
 .btn-primary:disabled { opacity: 0.5; cursor: default; }
 .btn-ghost {
   background: none; color: var(--text-2); border: 1.5px solid var(--border);
-  border-radius: 8px; padding: 8px 14px; font-family: 'Inter', sans-serif;
+  border-radius: 8px; padding: 8px 14px; font-family: 'Comic Neue', cursive;
   font-size: 0.85rem; font-weight: 600; cursor: pointer;
 }
 .btn-ghost:hover { border-color: var(--text-2); }
 .btn-danger {
   background: none; color: var(--exp-accent); border: 1.5px solid var(--exp-mid);
-  border-radius: 8px; padding: 8px 14px; font-family: 'Inter', sans-serif;
+  border-radius: 8px; padding: 8px 14px; font-family: 'Comic Neue', cursive;
   font-size: 0.85rem; font-weight: 600; cursor: pointer;
 }
 .modal-status {
@@ -258,9 +259,9 @@ body {
   padding: 9px 12px;
   border: none;
   border-radius: 8px 8px 0 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   background: rgba(255,255,255,0.12);
   color: rgba(255,255,255,0.7);
@@ -318,7 +319,7 @@ body {
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 5px 9px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.88rem;
   background: var(--page-bg);
   color: var(--text);
@@ -461,7 +462,7 @@ table { width: 100%; border-collapse: collapse; }
   color: rgba(255,255,255,0.9);
   font-size: 0.75rem;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   transition: background 0.15s;
   white-space: nowrap;
 }
@@ -526,7 +527,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: none;
   background: transparent;
   text-align: right;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.875rem;
   color: var(--text);
   padding: 1px 0;
@@ -617,7 +618,7 @@ tfoot td:not(:first-child) { text-align: right; }
   box-shadow: var(--shadow-md);
 }
 .mess-banner .big-num {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 1.6rem;
   font-weight: 900;
   line-height: 1;
@@ -662,7 +663,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border-radius: 7px;
   padding: 4px 10px;
   font-size: 0.76rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   cursor: pointer;
   font-weight: 600;
   background: var(--card-bg);
@@ -681,7 +682,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 4px 8px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.85rem;
   text-align: right;
   background: var(--page-bg);
@@ -693,7 +694,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 5px 9px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.8rem;
   color: var(--text-2);
   background: var(--page-bg);
@@ -758,7 +759,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 2px 5px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.8rem;
   text-align: center;
   background: var(--page-bg);
@@ -767,7 +768,7 @@ tfoot td:not(:first-child) { text-align: right; }
 .tbl-comment {
   border: none;
   background: transparent;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.75rem;
   color: var(--text-3);
   width: 90px;
@@ -822,7 +823,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border-top: 2px solid var(--border);
   font-weight: 700;
 }
-.ms-total-row .big { font-size: 1.2rem; font-family: 'Nunito', sans-serif; color: var(--mes-accent); }
+.ms-total-row .big { font-size: 1.2rem; font-family: 'Comic Neue', cursive; color: var(--mes-accent); }
 
 .divider { border: none; border-top: 1.5px solid var(--border); margin: 12px 0; }
 
@@ -833,7 +834,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 4px 8px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Comic Neue', cursive;
   font-size: 0.85rem;
   text-align: right;
   background: var(--page-bg);
@@ -913,12 +914,12 @@ tfoot td:not(:first-child) { text-align: right; }
   box-shadow: var(--shadow-md);
 }
 .ctab-banner-name { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
-.ctab-banner-total { font-family: 'Nunito', sans-serif; font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.ctab-banner-total { font-family: 'Comic Neue', cursive; font-size: 1.6rem; font-weight: 900; line-height: 1; }
 .ctab-banner-sub   { font-size: 0.73rem; opacity: 0.7; margin-top: 3px; }
 .ctab-hide-btn {
   background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25);
   color: rgba(255,255,255,0.85); border-radius: 8px; padding: 7px 12px;
-  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Comic Neue', cursive;
   transition: background 0.15s;
 }
 .ctab-hide-btn:hover { background: rgba(255,255,255,0.22); }
@@ -926,7 +927,7 @@ tfoot td:not(:first-child) { text-align: right; }
 .ctab-delete-btn {
   background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
   color: rgba(255,255,255,0.9); border-radius: 8px; padding: 7px 13px;
-  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Comic Neue', cursive;
   transition: background 0.15s;
 }
 .ctab-delete-btn:hover { background: rgba(255,255,255,0.28); }
@@ -942,7 +943,7 @@ tfoot td:not(:first-child) { text-align: right; }
 .ctab-form-note { flex: 1; min-width: 140px; }
 .ctab-form-input {
   border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px;
-  font-family: 'Inter', sans-serif; font-size: 0.875rem;
+  font-family: 'Comic Neue', cursive; font-size: 0.875rem;
   background: var(--page-bg); color: var(--text);
 }
 .ctab-form-input:focus { outline: none; border-color: var(--exp-accent); background: var(--card-bg); }
@@ -980,7 +981,7 @@ tfoot td:not(:first-child) { text-align: right; }
   background: var(--page-bg); border: 1.5px solid var(--border); border-radius: 8px;
   width: 32px; height: 32px; cursor: pointer; font-size: 1.15rem; color: var(--text-2);
   display: flex; align-items: center; justify-content: center; transition: background 0.12s;
-  font-family: 'Inter', sans-serif; line-height: 1;
+  font-family: 'Comic Neue', cursive; line-height: 1;
 }
 .cal-nav-btn:hover { background: var(--border); color: var(--text); }
 
@@ -1040,7 +1041,7 @@ tfoot td:not(:first-child) { text-align: right; }
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
 }
 .ctab-day-panel-date { font-weight: 700; font-size: 0.9rem; color: var(--exp-accent); }
-.ctab-day-panel-total { font-weight: 800; font-size: 1rem; color: var(--exp-accent); font-family: 'Nunito', sans-serif; }
+.ctab-day-panel-total { font-weight: 800; font-size: 1rem; color: var(--exp-accent); font-family: 'Comic Neue', cursive; }
 .ctab-day-entry {
   display: flex; justify-content: space-between; align-items: center;
   padding: 5px 0; border-bottom: 1px solid var(--exp-mid); font-size: 0.85rem;
@@ -1447,8 +1448,16 @@ function addRow(sec){
 }
 function delRow(sec,i){
   const{m,y}=getHomeSel(); homeData=loadHome(m,y);
+  const row=homeData[sec][i];
+  const label=row?.cat||'this row';
+  const reg=getRegistry();
+  const linked=reg.find(t=>t.name.toLowerCase()===(label).toLowerCase()&&(t.section===sec||(!t.section&&sec==='expenses')));
+  const warn=linked?`\nThis will also delete the "${linked.name}" tab and all its entries.`:'';
+  if(!confirm(`Delete "${label}"?${warn}\nThis cannot be undone.`)) return;
   homeData[sec].splice(i,1);
-  saveHomeLS(m,y,homeData); renderHome(homeData);
+  saveHomeLS(m,y,homeData);
+  if(linked) _doDeleteCtab(linked.id);
+  else renderHome(homeData);
 }
 function cellEdit(sec,i,field,val){
   const{m,y}=getHomeSel(); homeData=loadHome(m,y);
@@ -1475,18 +1484,25 @@ function renderHome(d){
       <td><button class="del-btn" onclick="delRow('income',${i})">✕</button></td></tr>`),
     bills: d.bills.map((r,i)=>{
       const isMess=r.cat.toLowerCase()==='mess';
+      const linked=!isMess&&reg.find(t=>t.name.toLowerCase()===r.cat.toLowerCase()&&t.section==='bills');
+      const ctabActual=linked?getCtabTotal(linked.id,m,y):null;
       const actualCell=isMess
         ?`<td class="auto-cell"><span class="auto-val">₹${fmt(messTotal)}</span><span class="linked-badge">auto</span></td>`
+        :linked
+        ?`<td class="auto-cell"><span class="auto-val">₹${fmt(ctabActual)}</span><span class="linked-badge">auto</span></td>`
         :`<td>${ci('bills',i,'actual',r.actual)}</td>`;
+      const catCell=linked
+        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('bills',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="openCtab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
+        :`<td>${ci('bills',i,'cat',r.cat,'text','left')}</td>`;
       return `<tr>
-        <td>${ci('bills',i,'cat',r.cat,'text','left')}</td>
+        ${catCell}
         <td>${ci('bills',i,'due',r.due,'text','narrow','placeholder="dd"')}</td>
         <td>${ci('bills',i,'budget',r.budget)}</td>
         ${actualCell}
         <td><button class="del-btn" onclick="delRow('bills',${i})">✕</button></td></tr>`;
     }),
     expenses: d.expenses.map((r,i)=>{
-      const linked=reg.find(t=>t.name.toLowerCase()===r.cat.toLowerCase());
+      const linked=reg.find(t=>t.name.toLowerCase()===r.cat.toLowerCase()&&(!t.section||t.section==='expenses'));
       const ctabActual=linked?getCtabTotal(linked.id,m,y):null;
       const displayActual=ctabActual!==null?ctabActual:nv(r.actual);
       const left=nv(r.budget)-displayActual;
@@ -1503,17 +1519,28 @@ function renderHome(d){
         <td class="${left<0?'negative':left>0?'positive':''}">${fmt(left)}</td>
         <td><button class="del-btn" onclick="delRow('expenses',${i})">✕</button></td></tr>`;
     }),
-    savings: d.savings.map((r,i)=>`<tr>
-      <td>${ci('savings',i,'cat',r.cat,'text','left')}</td>
-      <td>${ci('savings',i,'budget',r.budget)}</td>
-      <td>${ci('savings',i,'actual',r.actual)}</td>
-      <td><button class="del-btn" onclick="delRow('savings',${i})">✕</button></td></tr>`),
-    debt: d.debt.map((r,i)=>`<tr>
-      <td>${ci('debt',i,'cat',r.cat,'text','left')}</td>
-      <td>${ci('debt',i,'due',r.due,'text','narrow','placeholder="dd"')}</td>
-      <td>${ci('debt',i,'budget',r.budget)}</td>
-      <td>${ci('debt',i,'actual',r.actual)}</td>
-      <td><button class="del-btn" onclick="delRow('debt',${i})">✕</button></td></tr>`),
+    savings: d.savings.map((r,i)=>{
+      const linked=reg.find(t=>t.name.toLowerCase()===r.cat.toLowerCase()&&t.section==='savings');
+      const ctabActual=linked?getCtabTotal(linked.id,m,y):null;
+      const actualCell=linked
+        ?`<td class="auto-cell"><span class="auto-val">₹${fmt(ctabActual)}</span><span class="linked-badge">auto</span></td>`
+        :`<td>${ci('savings',i,'actual',r.actual)}</td>`;
+      const catCell=linked
+        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('savings',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="openCtab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
+        :`<td>${ci('savings',i,'cat',r.cat,'text','left')}</td>`;
+      return `<tr>${catCell}<td>${ci('savings',i,'budget',r.budget)}</td>${actualCell}<td><button class="del-btn" onclick="delRow('savings',${i})">✕</button></td></tr>`;
+    }),
+    debt: d.debt.map((r,i)=>{
+      const linked=reg.find(t=>t.name.toLowerCase()===r.cat.toLowerCase()&&t.section==='debt');
+      const ctabActual=linked?getCtabTotal(linked.id,m,y):null;
+      const actualCell=linked
+        ?`<td class="auto-cell"><span class="auto-val">₹${fmt(ctabActual)}</span><span class="linked-badge">auto</span></td>`
+        :`<td>${ci('debt',i,'actual',r.actual)}</td>`;
+      const catCell=linked
+        ?`<td><div style="display:flex;align-items:center;gap:4px">${ci('debt',i,'cat',r.cat,'text','left')}<button class="ctab-link-btn" onclick="openCtab('${linked.id}')" title="Open ${linked.name} tab">↗</button></div></td>`
+        :`<td>${ci('debt',i,'cat',r.cat,'text','left')}</td>`;
+      return `<tr>${catCell}<td>${ci('debt',i,'due',r.due,'text','narrow','placeholder="dd"')}</td><td>${ci('debt',i,'budget',r.budget)}</td>${actualCell}<td><button class="del-btn" onclick="delRow('debt',${i})">✕</button></td></tr>`;
+    }),
   };
   for(const[k,v]of Object.entries(R)) document.getElementById(`${k}-body`).innerHTML=v.join('');
   updateTotals(d);
@@ -1525,14 +1552,26 @@ function updateTotals(d){
   const reg=getRegistry();
   const iB=sumF(d.income,'budget'),iA=sumF(d.income,'actual');
   const bB=sumF(d.bills,'budget');
-  const bA=d.bills.reduce((s,r)=>s+(r.cat.toLowerCase()==='mess'?messTotal:nv(r.actual)),0);
-  const eB=sumF(d.expenses,'budget');
-  const eA=d.expenses.reduce((s,r)=>{
-    const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase());
+  const bA=d.bills.reduce((s,r)=>{
+    if(r.cat.toLowerCase()==='mess') return s+messTotal;
+    const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&x.section==='bills');
     return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
   },0);
-  const sB=sumF(d.savings,'budget'),sA=sumF(d.savings,'actual');
-  const dB=sumF(d.debt,'budget'),dA=sumF(d.debt,'actual');
+  const eB=sumF(d.expenses,'budget');
+  const eA=d.expenses.reduce((s,r)=>{
+    const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&(!x.section||x.section==='expenses'));
+    return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
+  },0);
+  const sB=sumF(d.savings,'budget');
+  const sA=d.savings.reduce((s,r)=>{
+    const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&x.section==='savings');
+    return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
+  },0);
+  const dB=sumF(d.debt,'budget');
+  const dA=d.debt.reduce((s,r)=>{
+    const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&x.section==='debt');
+    return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
+  },0);
   const balance=iA-bA-eA-sA-dA;
 
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
@@ -1794,22 +1833,56 @@ function confirmDeleteCtab(id,name){
 }
 
 function promptNewTab(){
-  const name=(prompt('New tab name (e.g. Gym, Trips):')||'').trim();
-  if(!name) return;
+  const overlay=document.getElementById('sync-modal-overlay');
+  overlay.innerHTML=`<div class="modal">
+    <h2>New Tab</h2>
+    <p class="desc">Create a dated-entry log. Its monthly total auto-fills in whichever section you pick.</p>
+    <label>Tab Name</label>
+    <input type="text" id="nt-name" placeholder="e.g. Gym, Trips, Groceries" />
+    <label>Link total to</label>
+    <select id="nt-section">
+      <option value="expenses">Expenses</option>
+      <option value="savings">Savings</option>
+      <option value="bills">Bills</option>
+      <option value="debt">Debt</option>
+      <option value="none">None (standalone, no auto-fill)</option>
+    </select>
+    <label>Budget ₹ (optional)</label>
+    <input type="number" id="nt-budget" placeholder="0" min="0" />
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeSyncModal()">Cancel</button>
+      <button class="btn-primary" onclick="confirmNewTab()">Create Tab</button>
+    </div>
+  </div>`;
+  overlay.classList.add('open');
+  setTimeout(()=>document.getElementById('nt-name')?.focus(),80);
+}
+
+function confirmNewTab(){
+  const name=(document.getElementById('nt-name').value||'').trim();
+  if(!name){alert('Please enter a tab name.');return;}
+  const section=document.getElementById('nt-section').value;
+  const budget=parseFloat(document.getElementById('nt-budget').value)||0;
   const reg=getRegistry();
   if(reg.some(t=>t.name.toLowerCase()===name.toLowerCase())){
-    alert(`A tab named "${name}" already exists.`); return;
+    alert(`A tab named "${name}" already exists.`);return;
   }
+  closeSyncModal();
   const id=Math.random().toString(36).slice(2,8);
-  reg.push({id,name});
+  reg.push({id,name,section});
   saveRegistry(reg);
-  // Auto-add matching expense row so the ↗ link always exists
-  const{m,y}=getHomeSel();
-  const hd=loadHome(m,y);
-  if(!hd.expenses.some(r=>r.cat.toLowerCase()===name.toLowerCase())){
-    hd.expenses.push({cat:name,budget:0,actual:0});
-    saveHomeLS(m,y,hd);
-    homeData=hd;
+  if(section!=='none'){
+    const{m,y}=getHomeSel();
+    const hd=loadHome(m,y);
+    const rows=hd[section];
+    if(rows&&!rows.some(r=>r.cat.toLowerCase()===name.toLowerCase())){
+      const row=(section==='bills'||section==='debt')
+        ?{cat:name,due:'',budget,actual:0}
+        :{cat:name,budget,actual:0};
+      rows.push(row);
+      saveHomeLS(m,y,hd);
+      homeData=hd;
+    }
   }
   renderTabs();
   switchTab(id);
@@ -1839,8 +1912,7 @@ function showClosedTabsModal(){
   overlay.classList.add('open');
 }
 
-function deleteCtab(id){
-  if(!confirm('Delete this tab? All entries will be removed.')) return;
+function _doDeleteCtab(id){
   let reg=getRegistry();
   reg=reg.filter(t=>t.id!==id);
   saveRegistry(reg);
@@ -1852,12 +1924,15 @@ function deleteCtab(id){
   toRemove.forEach(k=>localStorage.removeItem(k));
   localStorage.removeItem(`ctab_sel_${id}`);
   delete ctabSelectedDay[id];
-  // remove from hidden list too
   const h=getHiddenTabs().filter(x=>x!==id);
   localStorage.setItem(CTAB_HIDDEN_KEY,JSON.stringify(h));
   const pane=document.getElementById(`tab-${id}`);
   if(pane) pane.remove();
   switchTab('home');
+}
+function deleteCtab(id){
+  if(!confirm('Delete this tab? All entries will be removed.')) return;
+  _doDeleteCtab(id);
 }
 
 const ctabSelectedDay = {}; // tabId → selected day number (or null)

@@ -1,10 +1,10 @@
-const CACHE = 'expense-tracker-v9';
+const CACHE = 'expense-tracker-v11';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-  'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap',
+  'https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap',
 ];
 
 self.addEventListener('install', e => {
