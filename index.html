@@ -1823,7 +1823,7 @@ function getRegistry(){ return JSON.parse(localStorage.getItem(CTAB_REG_KEY)||'[
 function saveRegistry(reg){ localStorage.setItem(CTAB_REG_KEY,JSON.stringify(reg)); debouncedPush(); }
 
 function getCtabEntries(id,m,y){ return JSON.parse(localStorage.getItem(ctabKey(id,m,y))||'[]'); }
-function saveCtabEntries(id,m,y,entries){ localStorage.setItem(ctabKey(id,m,y),JSON.stringify(entries)); debouncedPush(); }
+function saveCtabEntries(id,m,y,entries){ localStorage.setItem(ctabKey(id,m,y),JSON.stringify(entries)); pushNow(); }
 
 function getCtabTotal(id,m,y){ return getCtabEntries(id,m,y).reduce((s,e)=>s+nv(e.amount),0); }
 
@@ -2201,7 +2201,9 @@ function setSyncStatus(state, text) {
 
 // Collect every key from localStorage that belongs to the app
 function collectAllData() {
-  const data = { home: {}, mess: {}, mess_rates: null, theme: null, ctab_registry: null, ctab: {} };
+  const ts = Date.now();
+  localStorage.setItem('sync_ts', ts);
+  const data = { home: {}, mess: {}, mess_rates: null, theme: null, ctab_registry: null, ctab: {}, sync_ts: ts };
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (/^home_\d+_\d+$/.test(k)) data.home[k] = JSON.parse(localStorage.getItem(k));
@@ -2224,6 +2226,7 @@ function applyRemoteData(data) {
   if (data.mess_rates)    localStorage.setItem('mess_rates', JSON.stringify(data.mess_rates));
   if (data.ctab_registry) localStorage.setItem(CTAB_REG_KEY, JSON.stringify(data.ctab_registry));
   if (data.ctab_hidden)   localStorage.setItem(CTAB_HIDDEN_KEY, JSON.stringify(data.ctab_hidden));
+  if (data.sync_ts)       localStorage.setItem('sync_ts', data.sync_ts);
   // Don't overwrite theme — that's device-local preference
 }
 
@@ -2297,11 +2300,17 @@ async function syncOnLoad() {
   setSyncStatus('busy', 'Syncing…');
   try {
     const remote = await pullFromGist(pat, gistId);
-    applyRemoteData(remote);
-    renderTabs();
-    setSyncStatus('ok', 'Synced');
-    loadHomeData();
-    loadMessData();
+    const localTs  = parseInt(localStorage.getItem('sync_ts') || '0');
+    const remoteTs = parseInt(remote.sync_ts || '0');
+    if (remoteTs > localTs) {
+      applyRemoteData(remote);
+      renderTabs();
+      loadHomeData();
+      loadMessData();
+      setSyncStatus('ok', 'Synced ↓');
+    } else {
+      setSyncStatus('ok', 'Synced');
+    }
   } catch(e) {
     setSyncStatus('err', 'Offline?');
     console.warn('Pull error:', e);
@@ -2315,7 +2324,12 @@ const _origSaveMessLS = saveMessLS;
 window.saveMessLS = function(m,y,d) { _origSaveMessLS(m,y,d); debouncedPush(); };
 
 let pushTimer, lastPushTime=0, rateLimitUntil=0;
-function pushNow(){ clearTimeout(pushTimer); if(Date.now()>=rateLimitUntil) pushToGist(); }
+function pushNow(){
+  clearTimeout(pushTimer);
+  const wait=Math.max(0, rateLimitUntil-Date.now());
+  if(wait>0) pushTimer=setTimeout(pushToGist, wait);
+  else pushToGist();
+}
 function debouncedPush(){
   clearTimeout(pushTimer);
   pushTimer=setTimeout(()=>{
