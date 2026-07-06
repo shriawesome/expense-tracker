@@ -2338,8 +2338,12 @@ document.addEventListener('visibilitychange', () => {
     pushToGist();
   }
   if (document.visibilityState === 'visible') {
-    syncOnLoad(); // pull latest when tab comes back into focus
+    syncOnLoad();
   }
+});
+// pagehide fires more reliably on mobile PWA when switching away
+window.addEventListener('pagehide', () => {
+  if (Date.now() >= rateLimitUntil) { clearTimeout(pushTimer); pushToGist(); }
 });
 
 /* ── Modal UI ── */
@@ -2383,7 +2387,8 @@ function connectedModalHTML(pat, gistId) {
       <button class="btn-danger" onclick="disconnectSync()">Disconnect</button>
       <div style="display:flex;gap:8px">
         <button class="btn-ghost" onclick="closeSyncModal()">Close</button>
-        <button class="btn-primary" onclick="forcePull()">↓ Pull from cloud</button>
+        <button class="btn-ghost" onclick="forcePull()">↓ Pull</button>
+        <button class="btn-primary" onclick="pushNow();closeSyncModal()">↑ Push</button>
       </div>
     </div>
   </div>`;
