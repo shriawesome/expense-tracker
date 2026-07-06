@@ -1773,6 +1773,7 @@ function renderTabs(){
     `<button class="tab-btn${activeTab==='home'?' active':''}" onclick="switchTab('home')">🏠 Home</button>`,
     `<button class="tab-btn${activeTab==='mess'?' active':''}" onclick="switchTab('mess')">🍱 Mess</button>`,
     ...reg.filter(t=>!hidden.includes(t.id)).map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}<span class="tab-close-x" onclick="event.stopPropagation();hideCtab('${t.id}')">×</span></button>`),
+    hidden.length?`<button class="tab-btn add-tab-btn" onclick="showClosedTabsModal()" title="${hidden.length} closed tab(s)">📁</button>`:'',
     `<button class="tab-btn add-tab-btn" onclick="promptNewTab()" title="New expense tab">＋</button>`,
   ].join('');
   // ensure panes exist for each custom tab
@@ -1802,8 +1803,40 @@ function promptNewTab(){
   const id=Math.random().toString(36).slice(2,8);
   reg.push({id,name});
   saveRegistry(reg);
+  // Auto-add matching expense row so the ↗ link always exists
+  const{m,y}=getHomeSel();
+  const hd=loadHome(m,y);
+  if(!hd.expenses.some(r=>r.cat.toLowerCase()===name.toLowerCase())){
+    hd.expenses.push({cat:name,budget:0,actual:0});
+    saveHomeLS(m,y,hd);
+    homeData=hd;
+  }
   renderTabs();
   switchTab(id);
+}
+
+function showClosedTabsModal(){
+  const reg=getRegistry();
+  const hidden=getHiddenTabs();
+  const closed=reg.filter(t=>hidden.includes(t.id));
+  if(!closed.length) return;
+  const overlay=document.getElementById('sync-modal-overlay');
+  overlay.innerHTML=`<div class="modal">
+    <h2>📁 Closed Tabs</h2>
+    <p class="desc">These tabs are closed but their data is intact. Reopen or delete them.</p>
+    ${closed.map(t=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:600;font-size:0.9rem">${t.name}</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn-primary" onclick="openCtab('${t.id}');closeSyncModal()">Reopen</button>
+          <button class="btn-danger" onclick="if(confirm('Delete all data for ${t.name}?')){deleteCtab('${t.id}');closeSyncModal();}">Delete</button>
+        </div>
+      </div>`).join('')}
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn-ghost" onclick="closeSyncModal()">Close</button>
+    </div>
+  </div>`;
+  overlay.classList.add('open');
 }
 
 function deleteCtab(id){
