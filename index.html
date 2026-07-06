@@ -1445,7 +1445,7 @@ function addRow(sec){
   const{m,y}=getHomeSel(); homeData=loadHome(m,y);
   const hasDue=sec==='bills'||sec==='debt';
   homeData[sec].push(hasDue?{cat:'New',due:'',budget:0,actual:0}:{cat:'New',budget:0,actual:0});
-  saveHomeLS(m,y,homeData); renderHome(homeData);
+  saveHomeLS(m,y,homeData); renderHome(homeData); pushNow();
 }
 function delRow(sec,i){
   const{m,y}=getHomeSel(); homeData=loadHome(m,y);
@@ -1458,7 +1458,7 @@ function delRow(sec,i){
   homeData[sec].splice(i,1);
   saveHomeLS(m,y,homeData);
   if(linked) _doDeleteCtab(linked.id);
-  else renderHome(homeData);
+  else { renderHome(homeData); pushNow(); }
 }
 function cellEdit(sec,i,field,val){
   const{m,y}=getHomeSel(); homeData=loadHome(m,y);
@@ -1887,6 +1887,7 @@ function confirmNewTab(){
   }
   renderTabs();
   switchTab(id);
+  pushNow();
 }
 
 function showClosedTabsModal(){
@@ -2290,6 +2291,7 @@ const _origSaveMessLS = saveMessLS;
 window.saveMessLS = function(m,y,d) { _origSaveMessLS(m,y,d); debouncedPush(); };
 
 let pushTimer, lastPushTime=0, rateLimitUntil=0;
+function pushNow(){ clearTimeout(pushTimer); if(Date.now()>=rateLimitUntil) pushToGist(); }
 function debouncedPush(){
   clearTimeout(pushTimer);
   pushTimer=setTimeout(()=>{
