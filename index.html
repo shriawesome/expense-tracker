@@ -1473,6 +1473,32 @@ function ci(sec,i,field,val,type,cls,extra=''){
     onchange="cellEdit('${sec}',${i},'${field}',this.value)" />`;
 }
 
+// Returns ctab registry entries linked to `sec` that have entries this month
+// but no matching manual row — used to inject "virtual" rows.
+function ctabVirtual(sec, reg, rows, m, y){
+  return reg.filter(t=>{
+    const match=sec==='expenses'?(!t.section||t.section==='expenses'):t.section===sec;
+    return match
+      && !rows.some(r=>r.cat.toLowerCase()===t.name.toLowerCase())
+      && getCtabTotal(t.id,m,y)>0;
+  });
+}
+
+function ctabVirtualRows(sec, reg, rows, m, y){
+  const hasDue=sec==='bills'||sec==='debt';
+  return ctabVirtual(sec,reg,rows,m,y).map(t=>{
+    const total=getCtabTotal(t.id,m,y);
+    const budget=nv(t.budget);
+    const left=budget-total;
+    const catCell=`<td><div style="display:flex;align-items:center;gap:4px"><span style="display:block;padding:3px 6px;font-size:0.88rem">${t.name}</span><button class="ctab-link-btn" onclick="openCtab('${t.id}')" title="Open ${t.name} tab">↗</button></div></td>`;
+    const dueCell=hasDue?`<td><span style="display:block;padding:3px 6px;color:var(--text-3)">—</span></td>`:'';
+    const budgetCell=`<td><span style="display:block;padding:3px 6px">${budget?'₹'+fmt(budget):'—'}</span></td>`;
+    const actualCell=`<td class="auto-cell"><span class="auto-val">₹${fmt(total)}</span><span class="linked-badge">auto</span></td>`;
+    const leftCell=sec==='expenses'?`<td class="${left<0?'negative':left>0?'positive':''}">${fmt(left)}</td>`:'';
+    return `<tr>${catCell}${dueCell}${budgetCell}${actualCell}${leftCell}<td></td></tr>`;
+  });
+}
+
 function renderHome(d){
   const{m,y}=getHomeSel();
   const messTotal=getMessTotalForMonth(m,y);
@@ -1543,6 +1569,11 @@ function renderHome(d){
       return `<tr>${catCell}<td>${ci('debt',i,'due',r.due,'text','narrow','placeholder="dd"')}</td><td>${ci('debt',i,'budget',r.budget)}</td>${actualCell}<td><button class="del-btn" onclick="delRow('debt',${i})">✕</button></td></tr>`;
     }),
   };
+  // Append virtual rows for ctabs that have entries this month but no manual row
+  R.bills    = [...R.bills,    ...ctabVirtualRows('bills',    reg, d.bills,    m, y)];
+  R.expenses = [...R.expenses, ...ctabVirtualRows('expenses', reg, d.expenses, m, y)];
+  R.savings  = [...R.savings,  ...ctabVirtualRows('savings',  reg, d.savings,  m, y)];
+  R.debt     = [...R.debt,     ...ctabVirtualRows('debt',     reg, d.debt,     m, y)];
   for(const[k,v]of Object.entries(R)) document.getElementById(`${k}-body`).innerHTML=v.join('');
   updateTotals(d);
 }
@@ -1552,27 +1583,33 @@ function updateTotals(d){
   const messTotal=getMessTotalForMonth(m,y);
   const reg=getRegistry();
   const iB=sumF(d.income,'budget'),iA=sumF(d.income,'actual');
-  const bB=sumF(d.bills,'budget');
+  const vSum=(items)=>items.reduce((s,t)=>s+getCtabTotal(t.id,m,y),0);
+  const vBudget=(items)=>items.reduce((s,t)=>s+nv(t.budget),0);
+  const bVirt=ctabVirtual('bills',reg,d.bills,m,y);
+  const bB=sumF(d.bills,'budget')+vBudget(bVirt);
   const bA=d.bills.reduce((s,r)=>{
     if(r.cat.toLowerCase()==='mess') return s+messTotal;
     const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&x.section==='bills');
     return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
-  },0);
-  const eB=sumF(d.expenses,'budget');
+  },0)+vSum(bVirt);
+  const eVirt=ctabVirtual('expenses',reg,d.expenses,m,y);
+  const eB=sumF(d.expenses,'budget')+vBudget(eVirt);
   const eA=d.expenses.reduce((s,r)=>{
     const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&(!x.section||x.section==='expenses'));
     return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
-  },0);
-  const sB=sumF(d.savings,'budget');
+  },0)+vSum(eVirt);
+  const sVirt=ctabVirtual('savings',reg,d.savings,m,y);
+  const sB=sumF(d.savings,'budget')+vBudget(sVirt);
   const sA=d.savings.reduce((s,r)=>{
     const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&x.section==='savings');
     return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
-  },0);
-  const dB=sumF(d.debt,'budget');
+  },0)+vSum(sVirt);
+  const dVirt=ctabVirtual('debt',reg,d.debt,m,y);
+  const dB=sumF(d.debt,'budget')+vBudget(dVirt);
   const dA=d.debt.reduce((s,r)=>{
     const t=reg.find(x=>x.name.toLowerCase()===r.cat.toLowerCase()&&x.section==='debt');
     return s+(t?getCtabTotal(t.id,m,y):nv(r.actual));
-  },0);
+  },0)+vSum(dVirt);
   const balance=iA-bA-eA-sA-dA;
 
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
@@ -1870,21 +1907,8 @@ function confirmNewTab(){
   }
   closeSyncModal();
   const id=Math.random().toString(36).slice(2,8);
-  reg.push({id,name,section});
+  reg.push({id, name, section, budget});
   saveRegistry(reg);
-  if(section!=='none'){
-    const{m,y}=getHomeSel();
-    const hd=loadHome(m,y);
-    const rows=hd[section];
-    if(rows&&!rows.some(r=>r.cat.toLowerCase()===name.toLowerCase())){
-      const row=(section==='bills'||section==='debt')
-        ?{cat:name,due:'',budget,actual:0}
-        :{cat:name,budget,actual:0};
-      rows.push(row);
-      saveHomeLS(m,y,hd);
-      homeData=hd;
-    }
-  }
   renderTabs();
   switchTab(id);
   pushNow();
