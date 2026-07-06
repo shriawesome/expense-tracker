@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+<style>:root{--app-font:'Comic Sans MS','Comic Neue',cursive;}</style>
 <style>
 
 /* ══════════════════════════════════════════
@@ -124,7 +125,7 @@
 input, select, textarea { color: var(--text); }
 html, body { height: 100%; overflow: hidden; }
 body {
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   background: var(--page-bg);
   color: var(--text);
   display: flex;
@@ -155,7 +156,7 @@ body {
   padding-bottom: 10px;
 }
 .header-top h1 {
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 1.15rem;
   font-weight: 900;
   color: #fff;
@@ -176,7 +177,7 @@ body {
   border: 1.5px solid rgba(255,255,255,0.25);
   border-radius: 8px; padding: 5px 10px;
   color: rgba(255,255,255,0.9); font-size: 0.75rem; font-weight: 600;
-  font-family: 'Comic Neue', cursive; cursor: pointer;
+  font-family: var(--app-font); cursor: pointer;
   transition: background 0.15s; white-space: nowrap;
 }
 .sync-btn:hover { background: rgba(255,255,255,0.25); }
@@ -206,12 +207,12 @@ body {
   transform: translateY(10px); transition: transform 0.2s;
 }
 .modal-overlay.open .modal { transform: translateY(0); }
-.modal h2 { font-family: 'Comic Neue', cursive; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+.modal h2 { font-family: var(--app-font); font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
 .modal .desc { font-size: 0.82rem; color: var(--text-3); margin-bottom: 18px; line-height: 1.5; }
 .modal label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); margin-bottom: 5px; }
 .modal input[type=text], .modal input[type=password], .modal input[type=number], .modal select {
   width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 8px 11px; font-family: 'Comic Neue', cursive; font-size: 0.88rem;
+  padding: 8px 11px; font-family: var(--app-font); font-size: 0.88rem;
   background: var(--page-bg); color: var(--text); margin-bottom: 12px;
   box-sizing: border-box;
 }
@@ -219,20 +220,20 @@ body {
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .btn-primary {
   background: var(--inc-accent); color: #fff; border: none; border-radius: 8px;
-  padding: 8px 18px; font-family: 'Comic Neue', cursive; font-size: 0.85rem;
+  padding: 8px 18px; font-family: var(--app-font); font-size: 0.85rem;
   font-weight: 600; cursor: pointer; transition: opacity 0.15s;
 }
 .btn-primary:hover { opacity: 0.88; }
 .btn-primary:disabled { opacity: 0.5; cursor: default; }
 .btn-ghost {
   background: none; color: var(--text-2); border: 1.5px solid var(--border);
-  border-radius: 8px; padding: 8px 14px; font-family: 'Comic Neue', cursive;
+  border-radius: 8px; padding: 8px 14px; font-family: var(--app-font);
   font-size: 0.85rem; font-weight: 600; cursor: pointer;
 }
 .btn-ghost:hover { border-color: var(--text-2); }
 .btn-danger {
   background: none; color: var(--exp-accent); border: 1.5px solid var(--exp-mid);
-  border-radius: 8px; padding: 8px 14px; font-family: 'Comic Neue', cursive;
+  border-radius: 8px; padding: 8px 14px; font-family: var(--app-font);
   font-size: 0.85rem; font-weight: 600; cursor: pointer;
 }
 .modal-status {
@@ -259,7 +260,7 @@ body {
   padding: 9px 12px;
   border: none;
   border-radius: 8px 8px 0 0;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -319,7 +320,7 @@ body {
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 5px 9px;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.88rem;
   background: var(--page-bg);
   color: var(--text);
@@ -462,7 +463,7 @@ table { width: 100%; border-collapse: collapse; }
   color: rgba(255,255,255,0.9);
   font-size: 0.75rem;
   font-weight: 600;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   transition: background 0.15s;
   white-space: nowrap;
 }
@@ -527,7 +528,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: none;
   background: transparent;
   text-align: right;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.875rem;
   color: var(--text);
   padding: 1px 0;
@@ -618,7 +619,7 @@ tfoot td:not(:first-child) { text-align: right; }
   box-shadow: var(--shadow-md);
 }
 .mess-banner .big-num {
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 1.6rem;
   font-weight: 900;
   line-height: 1;
@@ -663,7 +664,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border-radius: 7px;
   padding: 4px 10px;
   font-size: 0.76rem;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   cursor: pointer;
   font-weight: 600;
   background: var(--card-bg);
@@ -682,7 +683,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 4px 8px;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.85rem;
   text-align: right;
   background: var(--page-bg);
@@ -694,7 +695,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 5px 9px;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.8rem;
   color: var(--text-2);
   background: var(--page-bg);
@@ -759,7 +760,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 2px 5px;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.8rem;
   text-align: center;
   background: var(--page-bg);
@@ -768,7 +769,7 @@ tfoot td:not(:first-child) { text-align: right; }
 .tbl-comment {
   border: none;
   background: transparent;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.75rem;
   color: var(--text-3);
   width: 90px;
@@ -823,7 +824,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border-top: 2px solid var(--border);
   font-weight: 700;
 }
-.ms-total-row .big { font-size: 1.2rem; font-family: 'Comic Neue', cursive; color: var(--mes-accent); }
+.ms-total-row .big { font-size: 1.2rem; font-family: var(--app-font); color: var(--mes-accent); }
 
 .divider { border: none; border-top: 1.5px solid var(--border); margin: 12px 0; }
 
@@ -834,7 +835,7 @@ tfoot td:not(:first-child) { text-align: right; }
   border: 1.5px solid var(--border);
   border-radius: 7px;
   padding: 4px 8px;
-  font-family: 'Comic Neue', cursive;
+  font-family: var(--app-font);
   font-size: 0.85rem;
   text-align: right;
   background: var(--page-bg);
@@ -914,12 +915,12 @@ tfoot td:not(:first-child) { text-align: right; }
   box-shadow: var(--shadow-md);
 }
 .ctab-banner-name { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
-.ctab-banner-total { font-family: 'Comic Neue', cursive; font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.ctab-banner-total { font-family: var(--app-font); font-size: 1.6rem; font-weight: 900; line-height: 1; }
 .ctab-banner-sub   { font-size: 0.73rem; opacity: 0.7; margin-top: 3px; }
 .ctab-hide-btn {
   background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25);
   color: rgba(255,255,255,0.85); border-radius: 8px; padding: 7px 12px;
-  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Comic Neue', cursive;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: var(--app-font);
   transition: background 0.15s;
 }
 .ctab-hide-btn:hover { background: rgba(255,255,255,0.22); }
@@ -927,7 +928,7 @@ tfoot td:not(:first-child) { text-align: right; }
 .ctab-delete-btn {
   background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
   color: rgba(255,255,255,0.9); border-radius: 8px; padding: 7px 13px;
-  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Comic Neue', cursive;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: var(--app-font);
   transition: background 0.15s;
 }
 .ctab-delete-btn:hover { background: rgba(255,255,255,0.28); }
@@ -943,7 +944,7 @@ tfoot td:not(:first-child) { text-align: right; }
 .ctab-form-note { flex: 1; min-width: 140px; }
 .ctab-form-input {
   border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px;
-  font-family: 'Comic Neue', cursive; font-size: 0.875rem;
+  font-family: var(--app-font); font-size: 0.875rem;
   background: var(--page-bg); color: var(--text);
 }
 .ctab-form-input:focus { outline: none; border-color: var(--exp-accent); background: var(--card-bg); }
@@ -981,7 +982,7 @@ tfoot td:not(:first-child) { text-align: right; }
   background: var(--page-bg); border: 1.5px solid var(--border); border-radius: 8px;
   width: 32px; height: 32px; cursor: pointer; font-size: 1.15rem; color: var(--text-2);
   display: flex; align-items: center; justify-content: center; transition: background 0.12s;
-  font-family: 'Comic Neue', cursive; line-height: 1;
+  font-family: var(--app-font); line-height: 1;
 }
 .cal-nav-btn:hover { background: var(--border); color: var(--text); }
 
@@ -1041,7 +1042,7 @@ tfoot td:not(:first-child) { text-align: right; }
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
 }
 .ctab-day-panel-date { font-weight: 700; font-size: 0.9rem; color: var(--exp-accent); }
-.ctab-day-panel-total { font-weight: 800; font-size: 1rem; color: var(--exp-accent); font-family: 'Comic Neue', cursive; }
+.ctab-day-panel-total { font-weight: 800; font-size: 1rem; color: var(--exp-accent); font-family: var(--app-font); }
 .ctab-day-entry {
   display: flex; justify-content: space-between; align-items: center;
   padding: 5px 0; border-bottom: 1px solid var(--exp-mid); font-size: 0.85rem;
