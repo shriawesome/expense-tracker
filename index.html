@@ -915,6 +915,14 @@ tfoot td:not(:first-child) { text-align: right; }
 .ctab-banner-name { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
 .ctab-banner-total { font-family: 'Nunito', sans-serif; font-size: 1.6rem; font-weight: 900; line-height: 1; }
 .ctab-banner-sub   { font-size: 0.73rem; opacity: 0.7; margin-top: 3px; }
+.ctab-hide-btn {
+  background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.85); border-radius: 8px; padding: 7px 12px;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+  transition: background 0.15s;
+}
+.ctab-hide-btn:hover { background: rgba(255,255,255,0.22); }
+.tab-btn.hidden-tab { opacity: 0.4; font-style: italic; }
 .ctab-delete-btn {
   background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
   color: rgba(255,255,255,0.9); border-radius: 8px; padding: 7px 13px;
@@ -1764,7 +1772,8 @@ function renderTabs(){
   bar.innerHTML=[
     `<button class="tab-btn${activeTab==='home'?' active':''}" onclick="switchTab('home')">🏠 Home</button>`,
     `<button class="tab-btn${activeTab==='mess'?' active':''}" onclick="switchTab('mess')">🍱 Mess</button>`,
-    ...reg.map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}<span class="tab-close-x" onclick="event.stopPropagation();confirmDeleteCtab('${t.id}','${t.name.replace(/'/g,"\\'")}')">×</span></button>`),
+    ...reg.filter(t=>!hidden.includes(t.id)).map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.name}<span class="tab-close-x" onclick="event.stopPropagation();hideCtab('${t.id}')">×</span></button>`),
+    ...reg.filter(t=>hidden.includes(t.id)).map(t=>`<button class="tab-btn hidden-tab" onclick="openCtab('${t.id}')" title="Reopen ${t.name}">${t.name}</button>`),
     `<button class="tab-btn add-tab-btn" onclick="promptNewTab()" title="New expense tab">＋</button>`,
   ].join('');
   // ensure panes exist for each custom tab
@@ -2003,7 +2012,10 @@ function renderCtab(id){
         <div class="ctab-banner-total">₹${fmt(total)}</div>
         <div class="ctab-banner-sub">Total for ${MONTHS[m]} ${y}</div>
       </div>
-      <button class="ctab-delete-btn" onclick="confirmDeleteCtab('${id}','${tabDef.name.replace(/'/g,"\\'")}')">Close tab ×</button>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="ctab-hide-btn" onclick="hideCtab('${id}')">Close tab</button>
+        <button class="ctab-delete-btn" onclick="confirmDeleteCtab('${id}','${tabDef.name.replace(/'/g,"\\'")}')">Delete</button>
+      </div>
     </div>
     <div class="ctab-calendar">${renderCalGrid(id,m,y,entries,selDay)}</div>
     ${selDay
